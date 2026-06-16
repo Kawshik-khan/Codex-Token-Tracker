@@ -1,0 +1,158 @@
+{
+  "name": "tokentrack",
+  "version": "0.1.0",
+  "displayName": "TokenTrack",
+  "description": "Local-first Codex CLI token analytics with SQLite, budgets, exports, and live terminal dashboards.",
+  "type": "module",
+  "main": "./dist/extension.js",
+  "bin": {
+    "codex": "./dist/cli.js",
+    "tokentrack": "./dist/cli.js",
+    "codex-tokentrack": "./dist/cli.js"
+  },
+  "activationEvents": [
+    "onCommand:tokentrack.showDashboard",
+    "onCommand:tokentrack.showToday",
+    "onCommand:tokentrack.showWeek",
+    "onCommand:tokentrack.showMonth",
+    "onCommand:tokentrack.showSession",
+    "onCommand:tokentrack.showProjects",
+    "onCommand:tokentrack.setBudget",
+    "onCommand:tokentrack.exportJson",
+    "onCommand:tokentrack.exportCsv",
+    "onCommand:tokentrack.ingestCodexLog",
+    "onCommand:tokentrack.showDatabasePath"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "tokentrack.showDashboard",
+        "title": "TokenTrack: Open Dashboard"
+      },
+      {
+        "command": "tokentrack.showToday",
+        "title": "TokenTrack: Show Today"
+      },
+      {
+        "command": "tokentrack.showWeek",
+        "title": "TokenTrack: Show Week"
+      },
+      {
+        "command": "tokentrack.showMonth",
+        "title": "TokenTrack: Show Month"
+      },
+      {
+        "command": "tokentrack.showSession",
+        "title": "TokenTrack: Show Current Session"
+      },
+      {
+        "command": "tokentrack.showProjects",
+        "title": "TokenTrack: Show Projects"
+      },
+      {
+        "command": "tokentrack.setBudget",
+        "title": "TokenTrack: Set Monthly Budget"
+      },
+      {
+        "command": "tokentrack.exportJson",
+        "title": "TokenTrack: Export JSON"
+      },
+      {
+        "command": "tokentrack.exportCsv",
+        "title": "TokenTrack: Export CSV"
+      },
+      {
+        "command": "tokentrack.ingestCodexLog",
+        "title": "TokenTrack: Ingest Codex JSONL Log"
+      },
+      {
+        "command": "tokentrack.showDatabasePath",
+        "title": "TokenTrack: Show Database Path"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "tokentrack.showDashboard"
+        },
+        {
+          "command": "tokentrack.showToday"
+        },
+        {
+          "command": "tokentrack.showWeek"
+        },
+        {
+          "command": "tokentrack.showMonth"
+        },
+        {
+          "command": "tokentrack.showSession"
+        },
+        {
+          "command": "tokentrack.showProjects"
+        },
+        {
+          "command": "tokentrack.setBudget"
+        },
+        {
+          "command": "tokentrack.exportJson"
+        },
+        {
+          "command": "tokentrack.exportCsv"
+        },
+        {
+          "command": "tokentrack.ingestCodexLog"
+        },
+        {
+          "command": "tokentrack.showDatabasePath"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "TokenTrack",
+      "properties": {
+        "tokentrack.databasePath": {
+          "type": "string",
+          "default": "",
+          "description": "Absolute path to the TokenTrack SQLite database. Leave empty to use extension global storage."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx src/cli.ts",
+    "vscode:prepublish": "npm run build",
+    "db:generate": "drizzle-kit generate",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "keywords": [
+    "codex",
+    "analytics",
+    "tokens",
+    "sqlite",
+    "cli"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "better-sqlite3": "^12.10.0",
+    "commander": "^12.1.0",
+    "drizzle-orm": "^0.39.3",
+    "ink": "^5.1.0",
+    "react": "^18.3.1",
+    "tsx": "^4.19.2",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/node": "^22.10.5",
+    "@types/react": "^18.3.18",
+    "drizzle-kit": "^0.30.4",
+    "typescript": "^5.7.3",
+    "vitest": "^2.1.8"
+  },
+  "engines": {
+    "node": ">=20",
+    "vscode": "^1.92.0"
+  }
+}
