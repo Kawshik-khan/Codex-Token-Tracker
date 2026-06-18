@@ -4,13 +4,15 @@ import { Command } from "commander";
 import { createContainer } from "./application/container.js";
 import { runTrackedCommand } from "./application/codex-runner.js";
 import { getDatabasePath } from "./infrastructure/config.js";
+import { dashboardBlock } from "./presentation/dashboard.js";
 import { budgetBlock, chart, formatCost, formatNumber, summaryBlock } from "./presentation/format.js";
 import { renderMonitor } from "./presentation/monitor.js";
 
 const program = new Command();
 const container = createContainer();
 const analyticsCommands = new Set(["stats", "monitor", "export", "budget", "ingest", "run", "--help", "-h", "--version", "-V"]);
-const invokedAsCodex = basename(process.argv[1] ?? "").toLowerCase().startsWith("codex");
+const invokedCommand = process.env.TOKENTRACK_COMMAND_NAME?.toLowerCase() ?? basename(process.argv[1] ?? "").toLowerCase();
+const invokedAsCodex = invokedCommand.startsWith("codex");
 const firstArg = process.argv[2];
 
 if (invokedAsCodex && firstArg && !analyticsCommands.has(firstArg)) {
@@ -27,7 +29,10 @@ program
   .name(invokedAsCodex ? "codex" : "tokentrack")
   .description("Local-first Codex CLI token analytics")
   .version("0.1.0")
-  .option("--db", "Print active SQLite database path");
+  .option("--db", "Print active SQLite database path")
+  .action(async () => {
+    console.log(await dashboardBlock(container.analytics));
+  });
 
 program.hook("preAction", (thisCommand) => {
   if (thisCommand.opts().db) {
@@ -66,7 +71,7 @@ stats.command("month").description("Show monthly analytics").action(async () => 
 stats.command("cost").description("Show cost analytics").action(async () => {
   const month = await container.analytics.month();
   const today = await container.analytics.today();
-  console.log(["Cost", "────", "", `Today: ${formatCost(today.cost)}`, `Month: ${formatCost(month.cost)}`].join("\n"));
+  console.log(["Cost", "----", "", `Today: ${formatCost(today.cost)}`, `Month: ${formatCost(month.cost)}`].join("\n"));
 });
 
 stats
@@ -80,7 +85,7 @@ stats
     }
 
     const projects = await container.analytics.projects();
-    console.log("Projects\n────────");
+    console.log("Projects\n--------");
     for (const project of projects) {
       console.log(
         `${project.projectName.padEnd(24)} ${formatNumber(project.totalTokens).padStart(12)} tokens  ${formatCost(project.cost).padStart(8)}  ${formatNumber(project.requests)} requests`
@@ -108,9 +113,17 @@ program
     throw new Error("Format must be csv or json");
   });
 
-program
-  .command("budget")
-  .description("Manage monthly token budget")
+const budget = program.command("budget").description("Manage monthly token budget");
+
+budget
+  .command("status")
+  .description("Show monthly token budget status")
+  .action(async () => {
+    const status = await container.analytics.budgetStatus();
+    console.log(status ? budgetBlock(status) : "No monthly budget set");
+  });
+
+budget
   .command("set")
   .argument("<tokens>", "Monthly token limit")
   .action(async (tokens: string) => {

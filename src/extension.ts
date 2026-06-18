@@ -12,6 +12,7 @@ let output: vscode.OutputChannel;
 export function activate(context: vscode.ExtensionContext): void {
   output = vscode.window.createOutputChannel("TokenTrack");
   context.subscriptions.push(output);
+  context.subscriptions.push(vscode.window.registerTreeDataProvider("tokentrack.actions", new TokenTrackActionsProvider()));
 
   register(context, "tokentrack.showDashboard", () => showDashboard(context));
   register(context, "tokentrack.showToday", () => showSummary(context, "Today", "today"));
@@ -229,4 +230,39 @@ async function openDocument(title: string, content: string): Promise<void> {
 
 function workspaceProjectPath(): string {
   return vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? process.cwd();
+}
+
+class TokenTrackActionsProvider implements vscode.TreeDataProvider<TokenTrackAction> {
+  private readonly actions: TokenTrackAction[] = [
+    new TokenTrackAction("Open Dashboard", "tokentrack.showDashboard", "dashboard"),
+    new TokenTrackAction("Show Today", "tokentrack.showToday", "calendar"),
+    new TokenTrackAction("Show Week", "tokentrack.showWeek", "graph"),
+    new TokenTrackAction("Show Month", "tokentrack.showMonth", "pulse"),
+    new TokenTrackAction("Show Current Session", "tokentrack.showSession", "clock"),
+    new TokenTrackAction("Show Projects", "tokentrack.showProjects", "folder-library"),
+    new TokenTrackAction("Set Monthly Budget", "tokentrack.setBudget", "symbol-number"),
+    new TokenTrackAction("Export JSON", "tokentrack.exportJson", "json"),
+    new TokenTrackAction("Export CSV", "tokentrack.exportCsv", "table"),
+    new TokenTrackAction("Ingest Codex JSONL Log", "tokentrack.ingestCodexLog", "cloud-upload"),
+    new TokenTrackAction("Show Database Path", "tokentrack.showDatabasePath", "database")
+  ];
+
+  getTreeItem(element: TokenTrackAction): vscode.TreeItem {
+    return element;
+  }
+
+  getChildren(): TokenTrackAction[] {
+    return this.actions;
+  }
+}
+
+class TokenTrackAction extends vscode.TreeItem {
+  constructor(label: string, commandId: string, iconId: string) {
+    super(label, vscode.TreeItemCollapsibleState.None);
+    this.command = {
+      command: commandId,
+      title: label
+    };
+    this.iconPath = new vscode.ThemeIcon(iconId);
+  }
 }

@@ -11,7 +11,7 @@ export function formatCost(value: number): string {
 export function summaryBlock(title: string, summary: UsageSummary): string {
   return [
     title,
-    "────────────",
+    "-".repeat(Math.max(title.length, 12)),
     "",
     `Tokens:   ${formatNumber(summary.totalTokens)}`,
     `Input:    ${formatNumber(summary.inputTokens)}`,
@@ -28,7 +28,7 @@ export function budgetBlock(status: BudgetStatus): string {
   const alert = status.alertLevel ? `\nAlert: ${status.alertLevel}% budget reached` : "";
   return [
     "Monthly Budget",
-    "──────────────",
+    "--------------",
     "",
     `${formatNumber(status.monthlyLimit)} tokens`,
     "",
@@ -38,12 +38,21 @@ export function budgetBlock(status: BudgetStatus): string {
   ].join("\n");
 }
 
+export function compactSummaryLine(label: string, summary: UsageSummary): string {
+  return [
+    label.padEnd(15),
+    `${formatNumber(summary.totalTokens).padStart(10)} tokens`,
+    `${formatNumber(summary.requests).padStart(8)} requests`,
+    `${formatCost(summary.cost).padStart(9)}`
+  ].join("  ");
+}
+
 export function chart(points: TrendPoint[], width = 24): string {
   const max = Math.max(...points.map((point) => point.totalTokens), 1);
   return points
     .map((point) => {
       const size = Math.max(point.totalTokens === 0 ? 0 : 1, Math.round((point.totalTokens / max) * width));
-      return `${point.label.padEnd(10)} ${"█".repeat(size)} ${formatNumber(point.totalTokens)}`;
+      return `${point.label.padEnd(10)} ${"#".repeat(size)} ${formatNumber(point.totalTokens)}`;
     })
     .join("\n");
 }

@@ -3,4 +3,8 @@ dist/
 *.sqlite
 *.sqlite-shm
 *.sqlite-wal
+*.tgz
+*.log
 .env
+out/
+*.vsix

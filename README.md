@@ -5,9 +5,18 @@ TokenTrack is a local-first analytics layer for Codex CLI usage. It stores token
 ## Install
 
 ```powershell
-npm install
-npm run build
-npm link
+npm.cmd install
+npm.cmd run build
+npm.cmd link
+```
+
+After linking, the CLI commands are available locally:
+
+```powershell
+tokentrack --help
+tokentrack stats
+codex-token-tracker stats
+codex-tokentrack stats
 ```
 
 ## Commands
@@ -31,6 +40,53 @@ tokentrack run -- codex "explain this repo"
 
 The installed binary also provides `codex stats`, `codex monitor`, `codex export`, and `codex budget set`.
 
+## npm and npx package
+
+This package is configured for GitHub Packages as:
+
+```text
+@kawshik-khan/codex-token-tracker
+```
+
+Build a clean package tarball:
+
+```powershell
+npm.cmd pack
+```
+
+Test the packed CLI locally before publishing:
+
+```powershell
+npx.cmd --yes --package .\kawshik-khan-codex-token-tracker-0.1.0.tgz codex-token-tracker --version
+npm.cmd exec --yes --package .\kawshik-khan-codex-token-tracker-0.1.0.tgz -- tokentrack --help
+npm.cmd exec --yes --package .\kawshik-khan-codex-token-tracker-0.1.0.tgz -- tokentrack stats
+```
+
+Log in to GitHub Packages with a GitHub personal access token that has `write:packages` permission:
+
+```powershell
+npm.cmd login --scope=@kawshik-khan --registry=https://npm.pkg.github.com
+```
+
+Publish:
+
+```powershell
+npm.cmd publish
+```
+
+After publish, configure the GitHub Packages registry and run it without installing globally:
+
+```powershell
+npm.cmd config set @kawshik-khan:registry https://npm.pkg.github.com
+npx.cmd -y @kawshik-khan/codex-token-tracker@latest stats
+npx.cmd -y @kawshik-khan/codex-token-tracker@latest stats today
+npx.cmd -y @kawshik-khan/codex-token-tracker@latest monitor
+npx.cmd -y @kawshik-khan/codex-token-tracker@latest export json
+npx.cmd -y @kawshik-khan/codex-token-tracker@latest budget set 5000000
+```
+
+For the transparent `codex` command workflow, a global install or `npm link` is still the practical mode because `npx tokentrack` only exposes the command for that single execution.
+
 ## VS Code extension
 
 TokenTrack can also run as a VS Code extension from this same project.
@@ -41,7 +97,7 @@ npm.cmd run build
 code .
 ```
 
-In VS Code, press `F5` and run commands from the Command Palette:
+In VS Code, press `F5` and choose **Run TokenTrack Extension**. In the extension host window, run commands from the Command Palette:
 
 ```text
 TokenTrack: Open Dashboard
@@ -58,6 +114,15 @@ TokenTrack: Show Database Path
 ```
 
 By default, the extension stores its SQLite database in VS Code global extension storage. Set `tokentrack.databasePath` in VS Code settings to point the extension at the same SQLite file used by the CLI.
+
+To build an installable VSIX:
+
+```powershell
+npm.cmd run package:vsix
+code --install-extension .\codex-token-tracker-0.1.0.vsix
+```
+
+The extension entrypoint and CLI binaries are compiled to `out/`. The old `dist/` folder is ignored for extension packaging.
 
 ## Transparent Codex workflow
 

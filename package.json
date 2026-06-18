@@ -1,16 +1,26 @@
 {
-  "name": "tokentrack",
+  "name": "@kawshik-khan/codex-token-tracker",
   "version": "0.1.0",
   "displayName": "TokenTrack",
   "description": "Local-first Codex CLI token analytics with SQLite, budgets, exports, and live terminal dashboards.",
+  "publisher": "local",
   "type": "module",
-  "main": "./dist/extension.js",
+  "main": "./out/extension.js",
+  "files": [
+    "out/**/*.js",
+    "out/**/*.d.ts",
+    "assets",
+    "README.md",
+    "LICENSE"
+  ],
   "bin": {
-    "codex": "./dist/cli.js",
-    "tokentrack": "./dist/cli.js",
-    "codex-tokentrack": "./dist/cli.js"
+    "codex-token-tracker": "./out/cli.js",
+    "codex": "./out/codex.js",
+    "tokentrack": "./out/cli.js",
+    "codex-tokentrack": "./out/cli.js"
   },
   "activationEvents": [
+    "onView:tokentrack.actions",
     "onCommand:tokentrack.showDashboard",
     "onCommand:tokentrack.showToday",
     "onCommand:tokentrack.showWeek",
@@ -70,6 +80,23 @@
         "title": "TokenTrack: Show Database Path"
       }
     ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "tokentrack",
+          "title": "TokenTrack",
+          "icon": "assets/tokentrack.svg"
+        }
+      ]
+    },
+    "views": {
+      "tokentrack": [
+        {
+          "id": "tokentrack.actions",
+          "name": "Actions"
+        }
+      ]
+    },
     "menus": {
       "commandPalette": [
         {
@@ -121,7 +148,10 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "dev": "tsx src/cli.ts",
+    "prepack": "npm run build",
+    "pack:dry": "npm pack --dry-run",
     "vscode:prepublish": "npm run build",
+    "package:vsix": "vsce package",
     "db:generate": "drizzle-kit generate",
     "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json --noEmit"
@@ -133,9 +163,19 @@
     "sqlite",
     "cli"
   ],
+  "categories": [
+    "Other"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Kawshik-khan/Codex-Token-Tracker.git"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "license": "MIT",
   "dependencies": {
-    "better-sqlite3": "^12.10.0",
+    "better-sqlite3": "^12.11.1",
     "commander": "^12.1.0",
     "drizzle-orm": "^0.39.3",
     "ink": "^5.1.0",
@@ -147,6 +187,8 @@
     "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^22.10.5",
     "@types/react": "^18.3.18",
+    "@types/vscode": "^1.92.0",
+    "@vscode/vsce": "^3.2.2",
     "drizzle-kit": "^0.30.4",
     "typescript": "^5.7.3",
     "vitest": "^2.1.8"

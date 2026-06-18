@@ -1,0 +1,17 @@
+.git/**
+.vscode/**
+tests/**
+src/**
+drizzle.config.ts
+tsconfig.json
+package-lock.json
+debug.log
+*.tsbuildinfo
+*.sqlite
+.tokentrack.sqlite
+node_modules/.cache/**
+node_modules/.vite/**
+coverage/**
+dist/**/*.map
+dist/**
+out/**/*.map
